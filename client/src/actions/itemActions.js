@@ -1,21 +1,60 @@
-import { GET_ITEMS, DELETE_ITEM, ADD_ITEM } from "./types";
+import axios from 'axios';
+import { GET_ITEMS, GET_ITEM_DETAIL, DELETE_ITEM, UPDATE_ITEM, ADD_ITEM, ITEMS_LOADING } from "./types";
 
-export const getItems = () => {
-  return {
-    type: GET_ITEMS
-  };
+export const getItems = () => dispatch => {
+  dispatch(setItemsLoading());
+  axios
+    .get('api/items')
+    .then(res => 
+      dispatch({
+        type: GET_ITEMS,
+        payload: res.data
+      }))
 };
 
-export const deleteItem = id => {
-  return {
-    type: DELETE_ITEM,
-    payload: id
-  };
+export const getItem = id => dispatch => {
+  axios
+    .get(`api/items/${id}`)
+    .then(res => 
+      dispatch({
+        type: GET_ITEM_DETAIL,
+        payload: res.data
+      }))
 };
 
-export const addItem = item => {
-    return {
+export const addItem = item => dispatch => {
+  axios
+    .post('/api/items', item)
+    .then(res => 
+      dispatch({
         type: ADD_ITEM,
-        payload: item
-    }
+        payload: res.data
+      }))
+};
+
+export const deleteItem = id => dispatch => {
+  axios
+    .delete(`api/items/${id}`)
+    .then(res => 
+      dispatch({
+        type: DELETE_ITEM,
+        payload: id
+      }))
+};
+
+export const updateItem = id => dispatch => {
+  axios
+    .put(`api/items/${id}`)
+    .then(res => 
+      dispatch({
+        type: UPDATE_ITEM,
+        payload: [id, res.data]
+      }))
+};
+
+
+export const setItemsLoading = () => {
+  return {
+    type: ITEMS_LOADING,
+  }
 }
